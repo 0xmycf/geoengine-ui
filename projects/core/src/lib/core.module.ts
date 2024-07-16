@@ -135,6 +135,7 @@ import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neigh
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
 import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
+import {WorkflowEditorComponent} from "./workflow-editor/workflow-editor.component";
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -198,7 +199,6 @@ const CORE_COMPONENTS = [
     LayerListComponent,
     LayerListElementComponent,
     LayerListMenuComponent,
-    LineageGraphComponent,
     LineageGraphComponent,
     LineSimplificationComponent,
     LoadProjectComponent,
@@ -270,6 +270,8 @@ const CORE_COMPONENT_IMPORTS = [
     RasterLegendComponent,
     SidenavHeaderComponent,
     WorkspaceSettingsComponent,
+    ZoomHandlesComponent,
+    WorkflowEditorComponent
 ];
 
 @NgModule({
