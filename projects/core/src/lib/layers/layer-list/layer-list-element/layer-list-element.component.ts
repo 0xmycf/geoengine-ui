@@ -10,7 +10,7 @@ import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
-import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
+import {WorkflowEditorComponent} from '../../../workflow-editor/workflow-editor.component';
 import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
 import {HttpEventType} from '@angular/common/http';
@@ -99,7 +99,7 @@ export class LayerListElementComponent {
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
-    readonly LineageGraphComponent = LineageGraphComponent;
+    readonly WorkflowEditorComponent = WorkflowEditorComponent;
 
     /**
      * select a layer
