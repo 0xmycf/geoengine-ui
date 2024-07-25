@@ -136,6 +136,7 @@ import {LayerCollectionSelectionComponent} from './layer-collections/layer-colle
 import {CoreConfig} from './config.service';
 import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
 import {WorkflowEditorComponent} from "./workflow-editor/workflow-editor.component";
+import {CreateWorkflowComponent} from "./datasets/create-workflow/create-workflow.component";
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -174,6 +175,7 @@ const CORE_PIPES = [CssStringToRgbaPipe, HighlightPipe, RgbaToCssStringPipe, Saf
 const CORE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
+    CreateWorkflowComponent,
     BackendStatusPageComponent,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
