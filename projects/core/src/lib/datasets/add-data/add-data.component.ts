@@ -9,6 +9,7 @@ import {LayerCollectionSelectionComponent} from '../../layer-collections/layer-c
 import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
 import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
 import {MatIcon} from '@angular/material/icon';
+import {CreateWorkflowComponent} from "../create-workflow/create-workflow.component";
 
 export interface AddDataButton {
     name: string;
@@ -100,6 +101,18 @@ export class AddDataComponent {
             description: 'Add a workflow by its id',
             icon: 'build',
             sidenavConfig: {component: AddWorkflowComponent, keepParent: true},
+        };
+    }
+
+    /**
+     * Create workflow dialog
+     */
+    static createWorkflowEditorButton(): AddDataButton {
+        return {
+            name: 'Create Workflow using Editor',
+            description: 'Add a new workflow by graph editor',
+            icon: 'build',
+            sidenavConfig: {component: CreateWorkflowComponent, keepParent: true},
         };
     }
 }

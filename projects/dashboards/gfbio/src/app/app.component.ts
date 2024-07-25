@@ -288,6 +288,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 AddDataComponent.createUploadButton(),
                 AddDataComponent.createDrawFeaturesButton(),
                 AddDataComponent.createAddWorkflowByIdButton(),
+                AddDataComponent.createWorkflowEditorButton()
             ]),
         );
     }
