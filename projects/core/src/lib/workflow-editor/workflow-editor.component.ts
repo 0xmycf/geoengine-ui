@@ -1,13 +1,15 @@
 import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Layer} from '@geoengine/common';
+import {FxLayoutAlignDirective, FxLayoutDirective, Layer, NotificationService, UserService} from '@geoengine/common';
 import {ProjectService} from "../project/project.service";
 import {render, WidgetModel} from "workflow-editor";
-import {UserService} from "../users/user.service";
 import {BehaviorSubject, mergeMap} from "rxjs";
 import {map} from "rxjs/operators";
-import {NotificationService} from "../notification.service";
 import {DatasetService} from "../datasets/dataset.service";
+import {DialogHeaderComponent} from '../dialogs/dialog-header/dialog-header.component';
+import {AsyncPipe, NgIf} from '@angular/common';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 class WidgetModelWrapper {
     data: WidgetModel = {} as any;
@@ -55,13 +57,14 @@ class WidgetModelWrapper {
     templateUrl: './workflow-editor.component.html',
     styleUrls: ['./workflow-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [DialogHeaderComponent, AsyncPipe, MatProgressSpinner, FxLayoutAlignDirective, FxLayoutDirective, MatButton, NgIf],
 })
 export class WorkflowEditorComponent implements AfterViewInit {
     readonly title: string;
     readonly layerName: string;
     readonly layer?: Layer;
 
-    @ViewChild("widget")
+    @ViewChild('widget')
     readonly widgetRef!: ElementRef;
     readonly loading$;
     readonly isValid$ = new BehaviorSubject(false);
@@ -74,9 +77,9 @@ export class WorkflowEditorComponent implements AfterViewInit {
         private dialogRef: MatDialogRef<WorkflowEditorComponent>,
         private notificationService: NotificationService,
         private datasetService: DatasetService,
-        @Inject(MAT_DIALOG_DATA) private config: { layerOrNewName: Layer | string },
+        @Inject(MAT_DIALOG_DATA) private config: {layerOrNewName: Layer | string},
     ) {
-        if (typeof this.config.layerOrNewName === "string") {
+        if (typeof this.config.layerOrNewName === 'string') {
             this.layerName = this.config.layerOrNewName;
             this.loading$ = new BehaviorSubject(false);
         } else {
@@ -85,53 +88,62 @@ export class WorkflowEditorComponent implements AfterViewInit {
             this.loading$ = new BehaviorSubject(true);
         }
         this.title = `Workflow Editor for ${this.layerName}`;
-        this.userService.getSessionStream().subscribe(session => {
-            this.widgetModel.set("token", session.sessionToken);
-            this.widgetModel.set("serverUrl", session.apiConfiguration.basePath);
+        this.userService.getSessionStream().subscribe((session) => {
+            this.widgetModel.set('token', session.sessionToken);
+            this.widgetModel.set('serverUrl', session.apiConfiguration.basePath);
         });
-        this.widgetModel.on("change:workflow", () => {
-            const workflow = this.widgetModel.get("workflow");
+        this.widgetModel.on('change:workflow', () => {
+            const workflow = this.widgetModel.get('workflow');
             this.isValid$.next(workflow != null);
         });
     }
 
     ngAfterViewInit(): void {
         if (this.layer) {
-            this.projectService.getWorkflow(this.layer.workflowId).subscribe(workflow => {
-                this.widgetModel.set("workflow", workflow as any);
+            this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
+                this.widgetModel.set('workflow', workflow as any);
                 render({
                     model: this.widgetModel,
-                    el: this.widgetRef.nativeElement
+                    el: this.widgetRef.nativeElement,
                 });
                 this.loading$.next(false);
             });
         } else {
             render({
                 model: this.widgetModel,
-                el: this.widgetRef.nativeElement
+                el: this.widgetRef.nativeElement,
             });
         }
     }
 
-    onSave() {
+    onSave(): void {
+        console.warn("on save is running...")
         const layerCopy = this.layer;
 
         if (layerCopy) {
-            this.projectService.registerWorkflow(this.widgetModel.get("workflow")!).pipe(
-                map(workflowId => this.projectService.changeLayer(layerCopy, {
-                    workflowId
-                }))
-            ).subscribe(() => {
-                this.dialogRef.close();
-                this.notificationService.info(`Updated layer »${this.layerName}«`);
-            });
+            this.projectService
+                .registerWorkflow(this.widgetModel.get('workflow')!)
+                .pipe(
+                    map((workflowId) =>
+                        this.projectService.changeLayer(layerCopy, {
+                            workflowId,
+                        }),
+                    ),
+                )
+                .subscribe(() => {
+                    this.dialogRef.close();
+                    this.notificationService.info(`Updated layer »${this.layerName}«`);
+                });
         } else {
-            this.projectService.registerWorkflow(this.widgetModel.get("workflow")!).pipe(
-                mergeMap(workflowId => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
-                map(layer => this.projectService.addLayer(layer))
-            ).subscribe(() => {
-                this.dialogRef.close();
-            })
+            this.projectService
+                .registerWorkflow(this.widgetModel.get('workflow')!)
+                .pipe(
+                    mergeMap((workflowId) => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
+                    map((layer) => this.projectService.addLayer(layer)),
+                )
+                .subscribe(() => {
+                    this.dialogRef.close();
+                });
         }
     }
 }

@@ -14,7 +14,8 @@
     </mat-form-field>
 
     <div class="actions">
-        <button type="button" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'" (click)="openEditor()">
+        <button type="button" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'"
+                (click)="openEditor()">
             Open Editor
         </button>
     </div>
