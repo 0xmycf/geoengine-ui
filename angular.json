@@ -102,7 +102,7 @@
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css",
-                            "node_modules/workflow-editor/src/workflow_editor/static/widget.css",
+                            "node_modules/workflow-editor/dist/widget.css",
                             "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
                         ],
                         "scripts": ["node_modules/vis-timeline/peer/esm/vis-timeline-graph2d.min.js"],
@@ -138,7 +138,11 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {},
+                    "options": {
+                        "prebundle": {
+                            "exclude": ["workflow-editor"]
+                        }
+                    },
                     "configurations": {
                         "production": {
                             "buildTarget": "gis:build:production"
