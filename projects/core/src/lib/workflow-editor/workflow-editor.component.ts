@@ -117,7 +117,6 @@ export class WorkflowEditorComponent implements AfterViewInit {
     }
 
     onSave(): void {
-        console.warn("on save is running...")
         const layerCopy = this.layer;
 
         if (layerCopy) {

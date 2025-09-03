@@ -30,3 +30,7 @@ body {
 a {
     color: mat.get-theme-color(theme.$geoengine-theme, foreground, secondary-text);
 }
+
+html, body {
+    height: 100%;
+}

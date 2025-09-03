@@ -46,7 +46,7 @@ export class CreateWorkflowComponent {
         this.layoutService.setSidenavContentComponent(undefined);
         const layerName = this.form.controls.layerName.value;
         if (layerName) {
-            this.dialog.open(WorkflowEditorComponent, {data: {layerOrNewName: layerName}});
+            this.dialog.open(WorkflowEditorComponent, {data: {layerOrNewName: layerName}, panelClass: "no-scrollbar"});
         }
         // TODO what if its null (can it be null?) Fix the types here!
     }
