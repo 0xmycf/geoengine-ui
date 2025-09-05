@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
@@ -10,33 +10,32 @@ import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
-import {WorkflowEditorComponent} from '../../../workflow-editor/workflow-editor.component';
 import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
 import {
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    FxLayoutDirective,
     IconStyle,
     Layer,
+    LineIconComponent,
     NotificationService,
+    PointIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
     RasterLayerMetadata,
     RasterSymbology,
     Symbology,
     SymbologyType,
     UserService,
-    FxLayoutDirective,
-    FxLayoutAlignDirective,
-    PointIconComponent,
-    LineIconComponent,
-    PolygonIconComponent,
-    RasterIconComponent,
-    FxFlexDirective,
 } from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe} from '@angular/common';
+import {AsyncPipe, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -44,6 +43,7 @@ import {CdkDragHandle} from '@angular/cdk/drag-drop';
 import {VectorLegendComponent} from '../../legend/legend-vector/vector-legend.component';
 import {RasterLegendComponent} from '../../legend/legend-raster/raster-legend.component';
 import {MatProgressBar} from '@angular/material/progress-bar';
+
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -99,7 +99,6 @@ export class LayerListElementComponent {
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
-    readonly WorkflowEditorComponent = WorkflowEditorComponent;
 
     /**
      * select a layer
@@ -229,4 +228,8 @@ export class LayerListElementComponent {
     rasterSymbology(layer: Layer): RasterSymbology {
         return layer.symbology as RasterSymbology;
     }
+
+    // protected changeVisibility(layer: Layer, bl: boolean): void {
+    //     this.projectService.changeLayer(layer, {isVisible: bl});
+    // }
 }

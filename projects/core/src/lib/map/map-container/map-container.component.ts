@@ -10,19 +10,18 @@ import {
     effect,
     ElementRef,
     inject,
+    input,
     OnChanges,
     OnDestroy,
     QueryList,
     SimpleChange,
-    input,
     viewChild,
     viewChildren,
 } from '@angular/core';
 
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
-import {FeatureLike as OlFeatureLike} from 'ol/Feature';
-import OlFeature from 'ol/Feature';
+import OlFeature, {FeatureLike as OlFeatureLike} from 'ol/Feature';
 
 import OlLayer from 'ol/layer/Layer';
 import OlLayerTile from 'ol/layer/Tile';
@@ -34,7 +33,7 @@ import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import OlSourceVectorTile from 'ol/source/VectorTile';
 
-import {Type as OlGeometryType} from 'ol/geom/Geometry';
+import OlGeometry, {Type as OlGeometryType} from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlFormatMVT from 'ol/format/MVT';
 import {ol as flatgeobuf} from 'flatgeobuf';
@@ -44,9 +43,7 @@ import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleStyle, {StyleLike as OlStyleLike} from 'ol/style/Style';
 
 import OlInteractionDraw, {GeometryFunction} from 'ol/interaction/Draw';
-import OlInteractionSelect from 'ol/interaction/Select';
-import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
-import OlGeometry from 'ol/geom/Geometry';
+import OlInteractionSelect, {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
 import OlAttribution from 'ol/control/Attribution';
 
 import {MapLayerComponent} from '../map-layer.component';

@@ -1,22 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict } from '../../backend/backend.model';
-import { ProjectService } from '../../project/project.service';
-import {
-    NotificationService,
-    RandomColorService,
-    RasterLayer,
-    RasterSymbology,
-    VectorLayer,
-    createVectorSymbology,
-    isValidUuid,
-} from '@geoengine/common';
-import { SidenavHeaderComponent } from '../../sidenav/sidenav-header/sidenav-header.component';
-import { DialogHelpComponent } from '../../dialogs/dialog-help/dialog-help.component';
-import { MatFormField, MatLabel, MatInput, MatHint } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
-import { AsyncPipe } from '@angular/common';
-import { DatasetService } from "../dataset.service";
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {UUID} from '../../backend/backend.model';
+import {ProjectService} from '../../project/project.service';
+import {isValidUuid, NotificationService} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../dialogs/dialog-help/dialog-help.component';
+import {MatFormField, MatHint, MatInput, MatLabel} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
+import {DatasetService} from '../dataset.service';
 
 @Component({
     selector: 'geoengine-add-workflow',
@@ -39,9 +31,9 @@ import { DatasetService } from "../dataset.service";
 export class AddWorkflowComponent {
     protected readonly projectService = inject(ProjectService);
     protected readonly notificationService = inject(NotificationService);
-    protected readonly randomColorService = inject(RandomColorService);
     protected readonly datasetService = inject(DatasetService);
 
+    // TODO make this typed
     readonly form: UntypedFormGroup;
 
     constructor() {
@@ -56,13 +48,13 @@ export class AddWorkflowComponent {
         const workflowId: UUID = this.form.controls.workflowId.value;
 
         this.datasetService.createLayerFromWorkflow(layerName, workflowId).subscribe(
-            layer => {
+            (layer) => {
                 this.projectService.addLayer(layer);
             },
-            error => {
+            (error) => {
                 let errorMessage = `No workflow found for id: ${workflowId}`;
 
-                if ("error" in error) {
+                if ('error' in error) {
                     if (error.error !== 'NoWorkflowForGivenId') {
                         errorMessage = `Unknown error -> ${error.error}: ${error.message}`;
                     }
@@ -70,7 +62,7 @@ export class AddWorkflowComponent {
                     errorMessage = error.message;
                 }
                 this.notificationService.error(errorMessage);
-            }
+            },
         );
     }
 }

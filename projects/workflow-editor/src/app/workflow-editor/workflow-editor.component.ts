@@ -1,15 +1,13 @@
-import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, ViewChild} from '@angular/core';
 import {FxLayoutAlignDirective, FxLayoutDirective, Layer, NotificationService, UserService} from '@geoengine/common';
-import {ProjectService} from "../project/project.service";
-import {render, WidgetModel} from "workflow-editor";
-import {BehaviorSubject, mergeMap} from "rxjs";
-import {map} from "rxjs/operators";
-import {DatasetService} from "../datasets/dataset.service";
-import {DialogHeaderComponent} from '../dialogs/dialog-header/dialog-header.component';
+import {render, WidgetModel} from 'workflow-editor';
+import {BehaviorSubject, mergeMap} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {AsyncPipe, NgIf} from '@angular/common';
-import {MatButton} from '@angular/material/button';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {DatasetService, ProjectService} from '@geoengine/core';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
 
 class WidgetModelWrapper {
     data: WidgetModel = {} as any;
@@ -25,7 +23,7 @@ class WidgetModelWrapper {
 
         if (oldValue !== value) {
             this.data[key] = value;
-            this.listeners["change:" + key]?.forEach(listener => listener.call(this, null, []));
+            this.listeners['change:' + key]?.forEach((listener) => listener.call(this, null, []));
         }
     }
 
@@ -52,15 +50,19 @@ class WidgetModelWrapper {
     }
 }
 
+export interface LayerOrNewName {
+    layerOrNewName: Layer | string;
+}
+
 @Component({
     selector: 'geoengine-workflow-editor',
+    standalone: true,
     templateUrl: './workflow-editor.component.html',
     styleUrls: ['./workflow-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [DialogHeaderComponent, AsyncPipe, MatProgressSpinner, FxLayoutAlignDirective, FxLayoutDirective, MatButton, NgIf],
+    imports: [AsyncPipe, MatProgressSpinner, FxLayoutAlignDirective, FxLayoutDirective, NgIf, MatToolbar, MatButtonModule],
 })
 export class WorkflowEditorComponent implements AfterViewInit {
-    readonly title: string;
     readonly layerName: string;
     readonly layer?: Layer;
 
@@ -69,25 +71,22 @@ export class WorkflowEditorComponent implements AfterViewInit {
     readonly loading$;
     readonly isValid$ = new BehaviorSubject(false);
     readonly widgetModel = new WidgetModelWrapper();
+    readonly layerOrNewName: InputSignal<LayerOrNewName> = input({layerOrNewName: 'New Workflow Layer'} as LayerOrNewName);
+    readonly projectService: ProjectService = inject(ProjectService);
 
     constructor(
-        private elementRef: ElementRef,
-        private projectService: ProjectService,
         private userService: UserService,
-        private dialogRef: MatDialogRef<WorkflowEditorComponent>,
         private notificationService: NotificationService,
         private datasetService: DatasetService,
-        @Inject(MAT_DIALOG_DATA) private config: {layerOrNewName: Layer | string},
     ) {
-        if (typeof this.config.layerOrNewName === 'string') {
-            this.layerName = this.config.layerOrNewName;
+        if (typeof this.layerOrNewName().layerOrNewName === 'string') {
+            this.layerName = this.layerOrNewName().layerOrNewName as string;
             this.loading$ = new BehaviorSubject(false);
         } else {
-            this.layer = this.config.layerOrNewName;
+            this.layer = this.layerOrNewName().layerOrNewName as Layer;
             this.layerName = this.layer.name;
             this.loading$ = new BehaviorSubject(true);
         }
-        this.title = `Workflow Editor for ${this.layerName}`;
         this.userService.getSessionStream().subscribe((session) => {
             this.widgetModel.set('token', session.sessionToken);
             this.widgetModel.set('serverUrl', session.apiConfiguration.basePath);
@@ -130,7 +129,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     ),
                 )
                 .subscribe(() => {
-                    this.dialogRef.close();
+                    // this.dialogRef.close();
                     this.notificationService.info(`Updated layer »${this.layerName}«`);
                 });
         } else {
@@ -141,7 +140,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     map((layer) => this.projectService.addLayer(layer)),
                 )
                 .subscribe(() => {
-                    this.dialogRef.close();
+                    // this.dialogRef.close();
                 });
         }
     }

@@ -1,0 +1,32 @@
+#hover-map-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    width: 33.333%; // one third of the parent width
+    height: 30%; // one fifth of the parent height
+    margin: 1em;
+
+    z-index: 10; // make sure its above the editor
+    border: 2px solid #ccc;
+
+    border-radius: 25px;
+
+    overflow: hidden;
+    background-color: var(--geoengine-background-color);
+}
+
+.ol-layer { /* TODO (low): make the maps background white and add a slight curve to the corners of the map */
+    border-radius: 25px;
+}
+
+#reload-map-button {
+    position: absolute;
+    margin: 10px;
+    z-index: 11; // map has 10
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px;
+}

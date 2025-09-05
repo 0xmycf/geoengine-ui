@@ -2,15 +2,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     Directive,
+    inject,
     Input,
+    input,
     OnChanges,
     OnDestroy,
     OnInit,
+    output,
     SimpleChange,
     SimpleChanges,
-    inject,
-    input,
-    output,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -28,6 +28,7 @@ import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {
     NotificationService,
+    olExtentToTuple,
     RasterColorizer,
     RasterData,
     RasterSymbology,
@@ -35,7 +36,6 @@ import {
     Symbology,
     Time,
     VectorSymbology,
-    olExtentToTuple,
 } from '@geoengine/common';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -390,17 +390,35 @@ export class OlRasterLayerComponent
 
         this.source.on('tileloadstart', () => {
             tilesPending++;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.LOADING);
+            this.projectService.changeRasterLayerDataStatus(
+                {
+                    id: this.layerId(),
+                    layerType: 'raster',
+                },
+                LoadingState.LOADING,
+            );
         });
         this.source.on('tileloadend', () => {
             tilesPending--;
             if (tilesPending <= 0) {
-                this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.OK);
+                this.projectService.changeRasterLayerDataStatus(
+                    {
+                        id: this.layerId(),
+                        layerType: 'raster',
+                    },
+                    LoadingState.OK,
+                );
             }
         });
         this.source.on('tileloaderror', () => {
             tilesPending--;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.ERROR);
+            this.projectService.changeRasterLayerDataStatus(
+                {
+                    id: this.layerId(),
+                    layerType: 'raster',
+                },
+                LoadingState.ERROR,
+            );
         });
     }
 }

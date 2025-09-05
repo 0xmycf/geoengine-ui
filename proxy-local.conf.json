@@ -8,5 +8,18 @@
     "/mapcache/*": {
         "target": "http://sng107.sng.uni-frankfurt.de/mapcache/",
         "logLevel": "debug"
+    },
+    "/workflow": {
+        "target": "http://localhost:4201",
+        "secure": false,
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/workflow": ""
+        },
+        "/assets/mvt": {
+            "target": "http://localhost:4200",
+            "secure": false,
+            "changeOrigin": true
+        }
     }
 }

@@ -20,10 +20,11 @@
                 <span class="mat-body-2">Hide Legend</span>
             </button>
 
-            <button mat-menu-item (click)="dialog.open(WorkflowEditorComponent, {data: {layerOrNewName: layer}})">
-                <mat-icon>merge_type</mat-icon>
-                <span class="mat-body-2">Editor</span>
-            </button>
+            <!-- TODO/workflow implement with redirect / new page  -->
+<!--            <button mat-menu-item (click)="dialog.open(WorkflowEditorComponent, {data: {layerOrNewName: layer}})">-->
+<!--                <mat-icon>merge_type</mat-icon>-->
+<!--                <span class="mat-body-2">Editor</span>-->
+<!--            </button>-->
             <button mat-menu-item (click)="projectService.removeLayer(layer)">
                 <mat-icon>delete</mat-icon>
                 <span class="mat-body-2">Remove</span>

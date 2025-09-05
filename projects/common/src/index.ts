@@ -92,3 +92,4 @@ export * from './lib/util/errors';
 export * from './lib/util/form.validators';
 export * from './lib/util/symbologies';
 export * from './lib/util/icons';
+export * from './lib/util/inter_tab_communication'

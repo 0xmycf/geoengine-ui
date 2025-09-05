@@ -15,6 +15,7 @@ export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
 export * from './lib/spatial-references/spatial-reference.service';
 export * from './lib/tabs/tabs.service';
+// export * from './lib/workflow-tab.service';
 
 // Components
 export * from './lib/datasets/add-data/add-data.component';
@@ -88,7 +89,6 @@ export * from './lib/project/notifications/notifications.component';
 export * from './lib/project/save-project-as/save-project-as.component';
 export * from './lib/project/workspace-settings/workspace-settings.component';
 export * from './lib/provenance/lineage-graph/lineage-graph.component';
-export * from './lib/workflow-editor/workflow-editor.component';
 export * from './lib/provenance/table/provenance-table.component';
 export * from './lib/sidenav/navigation/navigation.component';
 export * from './lib/sidenav/sidenav-container/sidenav-container.component';

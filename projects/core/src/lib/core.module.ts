@@ -135,7 +135,6 @@ import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neigh
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
 import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
-import {WorkflowEditorComponent} from "./workflow-editor/workflow-editor.component";
 import {CreateWorkflowComponent} from "./datasets/create-workflow/create-workflow.component";
 
 export const MATERIAL_MODULES = [
@@ -273,7 +272,6 @@ const CORE_COMPONENT_IMPORTS = [
     SidenavHeaderComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
-    WorkflowEditorComponent
 ];
 
 @NgModule({

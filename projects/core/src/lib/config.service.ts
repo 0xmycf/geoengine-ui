@@ -117,7 +117,7 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             'Natural Earth Countries 10m': {
                 TYPE: 'MVT',
                 URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
-                STYLE_URL: 'assets/mvt/ne-ge.json',
+                STYLE_URL: '/assets/mvt/ne-ge.json',
                 SOURCE: 'ne',
                 LAYER_EXTENTS: {
                     'EPSG:4326': [-180, -180, 180, 180],

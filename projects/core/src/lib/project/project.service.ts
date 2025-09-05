@@ -1069,6 +1069,7 @@ export class ProjectService implements OnDestroy {
         }
     }
 
+    // here
     protected loadMostRecentProject(session: Session): Observable<Project> {
         let projectIdLookup: Observable<UUID | undefined>;
 
