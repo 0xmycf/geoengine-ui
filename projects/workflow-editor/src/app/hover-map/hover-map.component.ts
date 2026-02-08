@@ -56,11 +56,7 @@ export class HoverMapComponent implements OnInit, AfterViewInit {
             .getProjectOnce()
             .pipe(first())
             .subscribe((proj) => {
-                this.projectService.loadAndSetProject(proj.id).subscribe((new_proj) => {
-                    console.log({new_proj});
-                    console.log('proj' + proj.id);
-                    console.log('new_proj' + new_proj.id);
-                });
+                this.projectService.loadAndSetProject(proj.id).subscribe();
             });
     }
 }

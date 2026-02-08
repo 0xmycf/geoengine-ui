@@ -116,7 +116,9 @@ export class WorkflowEditorComponent implements AfterViewInit {
     }
 
     onSave(): void {
+        console.warn("onSave");
         const layerCopy = this.layer;
+        console.warn({layerCopy});
 
         if (layerCopy) {
             this.projectService
@@ -132,12 +134,24 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     this.notificationService.info(`Updated layer »${this.layerName}«`);
                 });
         } else {
+            const wf = this.widgetModel.get('workflow');
+            console.warn({wf});
             this.projectService
                 .registerWorkflow(this.widgetModel.get('workflow')!)
                 .pipe(
-                    mergeMap((workflowId) => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
-                    map((layer) => this.projectService.addLayer(layer)),
+                    mergeMap((workflowId) => {
+                        console.warn("workflowId is " + workflowId);
+                        return this.datasetService.createLayerFromWorkflow(this.layerName, workflowId);
+                    }),
+                    map((layer) => {
+                        console.warn("layer is ", + layer);
+                        console.warn({layer});
+                        return this.projectService.addLayer(layer);
+                    }),
                 )
+                .subscribe(() => {
+                    this.notificationService.info(`Created layer »${this.layerName}«`);
+                });
         }
     }
 }
