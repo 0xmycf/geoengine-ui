@@ -1243,6 +1243,11 @@
                             "projects/workflow-editor/src/assets",
                             {
                                 "glob": "**/*",
+                                "input": "projects/common/assets",
+                                "output": "assets"
+                            },
+                            {
+                                "glob": "**/*",
                                 "input": "projects/gis/src/assets",
                                 "output": "/assets/"
                             },
@@ -1316,6 +1321,11 @@
                         "assets": [
                             "projects/workflow-editor/src/favicon.ico",
                             "projects/workflow-editor/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "projects/common/assets",
+                                "output": "assets"
+                            },
                             {
                                 "glob": "**/*",
                                 "input": "projects/gis/src/assets",
