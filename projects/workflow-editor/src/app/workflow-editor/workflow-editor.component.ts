@@ -129,7 +129,6 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     ),
                 )
                 .subscribe(() => {
-                    // this.dialogRef.close();
                     this.notificationService.info(`Updated layer »${this.layerName}«`);
                 });
         } else {
@@ -139,9 +138,6 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     mergeMap((workflowId) => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
                     map((layer) => this.projectService.addLayer(layer)),
                 )
-                .subscribe(() => {
-                    // this.dialogRef.close();
-                });
         }
     }
 }

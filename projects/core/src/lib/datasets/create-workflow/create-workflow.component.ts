@@ -8,6 +8,9 @@ import {MatFormField, MatHint, MatInput, MatLabel} from '@angular/material/input
 import {AsyncPipe, NgIf} from '@angular/common';
 import {MatButton} from '@angular/material/button';
 import {isPostMessageMessage, PostMessageMessage, UserService} from '@geoengine/common';
+import {ProjectService} from '../../project/project.service';
+import {first} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
 
 interface FormData {
     layerName: FormControl<string | null>;
@@ -36,6 +39,8 @@ export class CreateWorkflowComponent {
     protected readonly dialog = inject(MatDialog);
     protected readonly layoutService = inject(LayoutService);
     protected readonly userService = inject(UserService);
+    protected readonly projectService = inject(ProjectService);
+    private workflowMessageHandler?: (event: MessageEvent) => void;
 
     constructor() {
         this.form = new FormGroup({
@@ -50,11 +55,16 @@ export class CreateWorkflowComponent {
             // TODO/workflow
             console.warn('The redirect is not properly implemented yet, ', window.origin);
             const normalizedName = encodeURIComponent(layerName);
-            this.userService.getSessionTokenStream().subscribe((token) => {
-                console.warn("preparing to send token, ", token);
+            combineLatest([this.userService.getSessionTokenStream(), this.projectService.getProjectOnce()])
+                .pipe(first())
+                .subscribe(([token, project]) => {
+                console.warn('preparing to send token, ', token);
                 const myHostname = window.location.hostname;
                 // must be external
-                const workflowUrl = `http://${myHostname}:4201/workflow/` + normalizedName;
+                const workflowUrl = `http://${myHostname}:4201/workflow/${normalizedName}?token=${encodeURIComponent(
+                    token,
+                )}&project=${encodeURIComponent(project.id)}`;
+                const workflowOrigin = new URL(workflowUrl).origin;
                 const workflowTab = open(workflowUrl, '_blank');
 
                 // can this be null?
@@ -62,9 +72,14 @@ export class CreateWorkflowComponent {
                     console.warn('just opened window is null!');
                 }
 
-                window.addEventListener('message', (event) => {
+                if (this.workflowMessageHandler) {
+                    window.removeEventListener('message', this.workflowMessageHandler);
+                }
+
+                this.workflowMessageHandler = (event: MessageEvent) => {
+                    console.warn('from create workflow component ', {event});
                     // failsafe as described by <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>
-                    if (event.origin !== 'http://localhost:4201' && event.origin !== "http://127.0.0.1:4201") return;
+                    if (event.origin !== workflowOrigin) return;
 
                     if (!isPostMessageMessage(event.data)) /* don't know what this is => ignore */ return;
 
@@ -84,10 +99,28 @@ export class CreateWorkflowComponent {
                                 kind: 'tokenResponse',
                                 data: token,
                             } as PostMessageMessage,
-                            workflowUrl,
+                            workflowOrigin,
                         );
                     }
-                });
+                    if (data.kind == 'projectReq') {
+                        if (!workflowTab) {
+                            console.warn('workflowtab is null inside eventlistener');
+                        }
+
+                        this.projectService.getProjectOnce().subscribe((proj) => {
+                            console.warn(`sending project token: {token}`);
+                            const token = proj.id;
+                            workflowTab?.postMessage(
+                                {
+                                    kind: 'projectResponse',
+                                    data: token,
+                                } as PostMessageMessage,
+                                workflowOrigin,
+                            );
+                        });
+                    }
+                };
+                window.addEventListener('message', this.workflowMessageHandler);
             });
         }
     }

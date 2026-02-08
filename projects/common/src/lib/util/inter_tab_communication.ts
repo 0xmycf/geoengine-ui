@@ -5,7 +5,9 @@ export const PAYLOAD_TYPE_SCHEMA = z.enum([
     'update',
     'test',
     'tokenReq',
+    'projectReq',
     'tokenResponse',
+    'projectResponse',
     'ack',
 ]);
 
