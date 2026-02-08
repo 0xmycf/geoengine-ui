@@ -73,6 +73,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
     readonly widgetModel = new WidgetModelWrapper();
     readonly layerOrNewName: InputSignal<LayerOrNewName> = input({layerOrNewName: 'New Workflow Layer'} as LayerOrNewName);
     readonly projectService: ProjectService = inject(ProjectService);
+    readonly workflowId = input<string | undefined>();
 
     constructor(
         private userService: UserService,
@@ -107,6 +108,15 @@ export class WorkflowEditorComponent implements AfterViewInit {
                 });
                 this.loading$.next(false);
             });
+        } else if (this.workflowId()) {
+            this.projectService.getWorkflow(this.workflowId()!).subscribe((workflow) => {
+                this.widgetModel.set('workflow', workflow as any);
+                render({
+                    model: this.widgetModel,
+                    el: this.widgetRef.nativeElement,
+                });
+                this.loading$.next(false);
+            });
         } else {
             render({
                 model: this.widgetModel,
@@ -129,6 +139,31 @@ export class WorkflowEditorComponent implements AfterViewInit {
                             workflowId,
                         }),
                     ),
+                )
+                .subscribe(() => {
+                    this.notificationService.info(`Updated layer »${this.layerName}«`);
+                });
+        } else if (this.workflowId()) {
+            this.projectService
+                .getProjectOnce()
+                .pipe(
+                    map((project) => project.layers.find((l) => l.workflowId === this.workflowId())),
+                    mergeMap((layer) => {
+                        if (!layer) {
+                            return this.projectService.registerWorkflow(this.widgetModel.get('workflow')!).pipe(
+                                mergeMap((workflowId) => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
+                                map((newLayer) => this.projectService.addLayer(newLayer)),
+                            );
+                        }
+
+                        return this.projectService.registerWorkflow(this.widgetModel.get('workflow')!).pipe(
+                            map((workflowId) =>
+                                this.projectService.changeLayer(layer, {
+                                    workflowId,
+                                }),
+                            ),
+                        );
+                    }),
                 )
                 .subscribe(() => {
                     this.notificationService.info(`Updated layer »${this.layerName}«`);

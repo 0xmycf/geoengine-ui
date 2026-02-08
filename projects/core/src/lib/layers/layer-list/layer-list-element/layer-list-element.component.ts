@@ -6,7 +6,7 @@ import {CoreConfig} from '../../../config.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
-import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
+import {combineLatest, last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
@@ -43,6 +43,7 @@ import {CdkDragHandle} from '@angular/cdk/drag-drop';
 import {VectorLegendComponent} from '../../legend/legend-vector/vector-legend.component';
 import {RasterLegendComponent} from '../../legend/legend-raster/raster-legend.component';
 import {MatProgressBar} from '@angular/material/progress-bar';
+import {first} from 'rxjs/operators';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -169,6 +170,17 @@ export class LayerListElementComponent {
 
     showSymbologyEditor(layer: Layer): void {
         this.layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer}});
+    }
+
+    openWorkflowEditor(layer: Layer): void {
+        combineLatest([this.userService.getSessionTokenStream(), this.projectService.getProjectOnce()])
+            .pipe(first())
+            .subscribe(([token, project]) => {
+                const workflowUrl = `http://${window.location.hostname}:4201/workflow/${encodeURIComponent(layer.name)}?token=${encodeURIComponent(
+                    token,
+                )}&project=${encodeURIComponent(project.id)}&workflowId=${encodeURIComponent(layer.workflowId)}`;
+                open(workflowUrl, '_blank');
+            });
     }
 
     getBands(layer: Layer): Observable<Array<RasterBandDescriptor>> {

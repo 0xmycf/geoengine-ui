@@ -1,9 +1,10 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {WorkflowEditorComponent} from '../workflow-editor/workflow-editor.component';
+import {WorkflowEditorComponent, LayerOrNewName} from '../workflow-editor/workflow-editor.component';
 import {MapContainerComponent} from '@geoengine/core';
 import {HoverMapComponent} from '../hover-map/hover-map.component';
 import {UserService} from '@geoengine/common';
+import {ProjectService} from '@geoengine/core';
 
 @Component({
     selector: 'app-main-interface',
@@ -14,9 +15,18 @@ import {UserService} from '@geoengine/common';
 export class MainInterfaceComponent implements OnInit {
     route: ActivatedRoute = inject(ActivatedRoute);
     userService: UserService = inject(UserService);
+    projectService: ProjectService = inject(ProjectService);
     name?: string;
+    layerOrNewName: LayerOrNewName = {layerOrNewName: 'New Workflow Layer'};
+    workflowId?: string;
+    ready = false;
 
     ngOnInit(): void {
+        const name = this.getName();
+        this.workflowId = this.route.snapshot.queryParamMap.get('workflowId') ?? undefined;
+        this.layerOrNewName = {layerOrNewName: name};
+        this.ready = true;
+
         const token = this.getToken();
         if (token) {
             this.userService.createSessionWithToken(token).subscribe();
@@ -31,6 +41,6 @@ export class MainInterfaceComponent implements OnInit {
     getName(): string {
         const name = this.route.snapshot.params['name'];
         this.name = name;
-        return name;
+        return name ?? 'New Workflow Layer';
     }
 }
