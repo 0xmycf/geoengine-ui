@@ -1,6 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
-@use '../../gis/src/app-theme' as theme;
+@use 'app-theme' as theme;
 
 html, body {
     height: 100%;
