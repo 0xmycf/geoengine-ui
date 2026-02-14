@@ -76,7 +76,7 @@ export class CreateWorkflowComponent {
                         window.removeEventListener('message', this.workflowMessageHandler);
                     }
 
-                    this.workflowMessageHandler = (event: MessageEvent) => {
+                    this.workflowMessageHandler = (event: MessageEvent) : void => {
                         console.warn('from create workflow component ', {event});
                         // failsafe as described by <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>
                         if (event.origin !== workflowOrigin) return;
@@ -109,11 +109,11 @@ export class CreateWorkflowComponent {
 
                             this.projectService.getProjectOnce().subscribe((proj) => {
                                 console.warn(`sending project token: {token}`);
-                                const token = proj.id;
+                                const tkn = proj.id;
                                 workflowTab?.postMessage(
                                     {
                                         kind: 'projectResponse',
-                                        data: token,
+                                        data: tkn,
                                     } as PostMessageMessage,
                                     workflowOrigin,
                                 );

@@ -58,6 +58,11 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
     private startLeftPx = 0;
     private startTopPx = 0;
 
+    constructor() {
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers: Layer[]) => layers.slice(0).reverse()));
+        this.mapIsGrid$ = this.mapService.isGrid$; // See 'MainComponent.mapIsGrid$' for the same implementation
+    }
+
     private readonly pointerMoveListener = (event: PointerEvent): void => {
         if (!this.isResizing && !this.isDragging) {
             return;
@@ -128,11 +133,6 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.activeResizeDirection = undefined;
     };
 
-    constructor() {
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers: Layer[]) => layers.slice(0).reverse()));
-        this.mapIsGrid$ = this.mapService.isGrid$; // See 'MainComponent.mapIsGrid$' for the same implementation
-    }
-
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent());
     }
@@ -194,7 +194,7 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
         this.startTopPx = this.hoverMapTopPx;
     }
 
-    onReloadButton() {
+    onReloadButton(): void {
         // reloads the project from the backend
         // to retrieve new and old layers
         this.projectService

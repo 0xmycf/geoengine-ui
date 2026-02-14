@@ -1,12 +1,10 @@
 import {Routes} from '@angular/router';
 import {BackendAvailableGuard, CanRegisterGuard, LoginComponent, RegisterComponent} from '@geoengine/common';
-import {TestComponentComponent} from './test-component/test-component.component';
 import {MainInterfaceComponent} from './main-interface/main-interface.component';
 
 /* adapted from 'projects/manager/src/app/app-routing.module.ts' */
 export const routes: Routes = [
     {path: '', redirectTo: 'workflow/newLayer', pathMatch: 'full'},
-    {path: 'test', component: TestComponentComponent},
     {path: 'workflow/:name', component: MainInterfaceComponent, canActivate: []},
     {path: 'signin', component: LoginComponent, data: {loginRedirect: '/workflow'}},
     {

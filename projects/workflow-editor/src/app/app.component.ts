@@ -1,12 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {UserService, isPostMessageMessage, PostMessageMessage} from '@geoengine/common';
+import {isPostMessageMessage, PostMessageMessage, UserService} from '@geoengine/common';
 import {RouterOutlet} from '@angular/router';
 import {gisOrigin, postMessageToGis} from './util';
 import {ProjectService} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 
 @Component({
-    selector: 'workflow-editor-root',
+    selector: 'geoengine-workflow-editor-root',
     imports: [RouterOutlet],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
@@ -50,17 +50,17 @@ export class AppComponent implements OnInit {
         postMessageToGis({kind: 'tokenReq', data: null});
     }
 
-    private requestPorjectToken(): void {
+    private requestProjectToken(): void {
         postMessageToGis({kind: 'projectReq', data: null});
     }
 
-    private async createSession(token: string) {
+    private createSession(token: string): void {
         if (token) {
             this.userService
                 .createSessionWithToken(token)
                 .pipe(first())
                 .subscribe(() => {
-                    this.requestPorjectToken();
+                    this.requestProjectToken();
                     this.userService.saveSettingInLocalStorage('session', token);
                 });
         }

@@ -1,10 +1,8 @@
 <mat-toolbar class="workflow-toolbar">
     <span>Workflow Editor for {{ layerName }}</span>
-    <div *ngIf="loading$ | async; then thenBlock; else elseBlock"></div>
-    <ng-template #thenBlock>
+    @if (loading$ | async) {
         <mat-spinner class="loading" [diameter]="15"></mat-spinner>
-    </ng-template>
-    <ng-template #elseBlock>
+    } @else {
         <div>
             <button
                 mat-raised-button
@@ -15,7 +13,7 @@
                 Save
             </button>
         </div>
-    </ng-template>
+    }
 </mat-toolbar>
 <div>
     <!-- The editor is rendered inside this widget -->
