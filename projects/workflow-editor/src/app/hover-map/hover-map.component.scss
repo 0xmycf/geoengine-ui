@@ -1,11 +1,10 @@
 #hover-map-container {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: 16px;
+    right: 16px;
 
     width: 33.333%; // one third of the parent width
     height: 30%; // one fifth of the parent height
-    margin: 1em;
 
     z-index: 10; // make sure its above the editor
     border: 2px solid #ccc;
@@ -14,33 +13,121 @@
 
     overflow: hidden;
     background-color: var(--geoengine-background-color);
+
+    &:hover {
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+    }
 }
 
-#hover-map-resize-handle {
+#hover-map-drag-handle {
     position: absolute;
     top: 8px;
-    left: 8px;
-    width: 18px;
+    left: 50%;
+    width: 84px;
     height: 18px;
+    transform: translateX(-50%);
     border: none;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
-    cursor: nwse-resize;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    cursor: grab;
     touch-action: none;
-    user-select: none;
     z-index: 12;
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 10px;
-        height: 10px;
-        border-top: 2px solid #666;
-        border-left: 2px solid #666;
+    &:active {
+        cursor: grabbing;
     }
+}
+
+.drag-grip {
+    display: block;
+    width: 28px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.38);
+}
+
+.resize-zone {
+    position: absolute;
+    border: none;
+    padding: 0;
+    background: transparent;
+    touch-action: none;
+    z-index: 13;
+}
+
+.resize-zone-n {
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 10px;
+    cursor: ns-resize;
+}
+
+.resize-zone-s {
+    bottom: 0;
+    left: 12px;
+    right: 12px;
+    height: 10px;
+    cursor: ns-resize;
+}
+
+.resize-zone-e {
+    top: 12px;
+    right: 0;
+    bottom: 12px;
+    width: 10px;
+    cursor: ew-resize;
+}
+
+.resize-zone-w {
+    top: 12px;
+    left: 0;
+    bottom: 12px;
+    width: 10px;
+    cursor: ew-resize;
+}
+
+.resize-zone-ne {
+    top: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nesw-resize;
+}
+
+.resize-zone-nw {
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+}
+
+.resize-zone-se {
+    right: 0;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+}
+
+.resize-zone-sw {
+    left: 0;
+    bottom: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nesw-resize;
+}
+
+#hover-map-container:hover .resize-zone-n,
+#hover-map-container:hover .resize-zone-s {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+#hover-map-container:hover .resize-zone-e,
+#hover-map-container:hover .resize-zone-w {
+    background: rgba(0, 0, 0, 0.06);
 }
 
 .ol-layer {
@@ -51,7 +138,7 @@
 #reload-map-button {
     position: absolute;
     margin: 10px;
-    z-index: 11; // map has 10
+    z-index: 14; // map has 10
     border-radius: 5px;
     display: inline-flex;
     align-items: center;

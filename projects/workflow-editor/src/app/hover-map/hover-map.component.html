@@ -3,13 +3,68 @@
     id="hover-map-container"
     [style.width.px]="hoverMapWidthPx"
     [style.height.px]="hoverMapHeightPx"
+    [style.left.px]="hoverMapLeftPx"
+    [style.top.px]="hoverMapTopPx"
+    [style.right]="hoverMapLeftPx !== undefined ? 'auto' : null"
+    [style.bottom]="hoverMapTopPx !== undefined ? 'auto' : null"
 >
     <button
-        id="hover-map-resize-handle"
+        class="resize-zone resize-zone-n"
         type="button"
-        aria-label="Resize hover map"
-        (pointerdown)="onResizeStart($event)"
+        aria-label="Resize hover map from top edge"
+        (pointerdown)="onResizeStart($event, 'n')"
     ></button>
+    <button
+        class="resize-zone resize-zone-s"
+        type="button"
+        aria-label="Resize hover map from bottom edge"
+        (pointerdown)="onResizeStart($event, 's')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-e"
+        type="button"
+        aria-label="Resize hover map from right edge"
+        (pointerdown)="onResizeStart($event, 'e')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-w"
+        type="button"
+        aria-label="Resize hover map from left edge"
+        (pointerdown)="onResizeStart($event, 'w')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-ne"
+        type="button"
+        aria-label="Resize hover map from top-right corner"
+        (pointerdown)="onResizeStart($event, 'ne')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-nw"
+        type="button"
+        aria-label="Resize hover map from top-left corner"
+        (pointerdown)="onResizeStart($event, 'nw')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-se"
+        type="button"
+        aria-label="Resize hover map from bottom-right corner"
+        (pointerdown)="onResizeStart($event, 'se')"
+    ></button>
+    <button
+        class="resize-zone resize-zone-sw"
+        type="button"
+        aria-label="Resize hover map from bottom-left corner"
+        (pointerdown)="onResizeStart($event, 'sw')"
+    ></button>
+
+    <button
+        id="hover-map-drag-handle"
+        type="button"
+        aria-label="Move hover map"
+        (pointerdown)="onDragStart($event)"
+    >
+        <span class="drag-grip" aria-hidden="true"></span>
+    </button>
 
     <button (click)="onReloadButton()" id="reload-map-button">
         <mat-icon>refresh</mat-icon>

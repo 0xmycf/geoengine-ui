@@ -13,6 +13,8 @@ import {
 import {Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 
+type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
+
 @Component({
     selector: 'geoengine-hover-map',
     imports: [
@@ -39,19 +41,25 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     hoverMapWidthPx?: number;
     hoverMapHeightPx?: number;
+    hoverMapLeftPx?: number;
+    hoverMapTopPx?: number;
 
     private readonly minWidthPx = 240;
     private readonly minHeightPx = 180;
     private readonly marginPx = 16;
 
     private isResizing = false;
+    private isDragging = false;
+    private activeResizeDirection?: ResizeDirection;
     private startPointerX = 0;
     private startPointerY = 0;
     private startWidthPx = 0;
     private startHeightPx = 0;
+    private startLeftPx = 0;
+    private startTopPx = 0;
 
     private readonly pointerMoveListener = (event: PointerEvent): void => {
-        if (!this.isResizing) {
+        if (!this.isResizing && !this.isDragging) {
             return;
         }
 
@@ -59,17 +67,65 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
         const pointerDeltaY = event.clientY - this.startPointerY;
 
         const containingBlock = this.getContainingBlock();
-        const maxWidthPx = Math.max(this.minWidthPx, containingBlock.clientWidth - 2 * this.marginPx);
-        const maxHeightPx = Math.max(this.minHeightPx, containingBlock.clientHeight - 2 * this.marginPx);
+        if (this.isResizing) {
+            const direction = this.activeResizeDirection;
+            if (!direction) {
+                return;
+            }
 
-        this.hoverMapWidthPx = this.clamp(this.startWidthPx - pointerDeltaX, this.minWidthPx, maxWidthPx);
-        this.hoverMapHeightPx = this.clamp(this.startHeightPx - pointerDeltaY, this.minHeightPx, maxHeightPx);
+            let nextLeftPx = this.startLeftPx;
+            let nextTopPx = this.startTopPx;
+            let nextWidthPx = this.startWidthPx;
+            let nextHeightPx = this.startHeightPx;
 
-        this.mapComponent().resize();
+            if (direction.includes('w')) {
+                const maxLeftPx = this.startLeftPx + this.startWidthPx - this.minWidthPx;
+                nextLeftPx = this.clamp(this.startLeftPx + pointerDeltaX, this.marginPx, maxLeftPx);
+                nextWidthPx = this.startWidthPx + (this.startLeftPx - nextLeftPx);
+            }
+
+            if (direction.includes('e')) {
+                const maxWidthPx = containingBlock.clientWidth - this.startLeftPx - this.marginPx;
+                nextWidthPx = this.clamp(this.startWidthPx + pointerDeltaX, this.minWidthPx, maxWidthPx);
+            }
+
+            if (direction.includes('n')) {
+                const maxTopPx = this.startTopPx + this.startHeightPx - this.minHeightPx;
+                nextTopPx = this.clamp(this.startTopPx + pointerDeltaY, this.marginPx, maxTopPx);
+                nextHeightPx = this.startHeightPx + (this.startTopPx - nextTopPx);
+            }
+
+            if (direction.includes('s')) {
+                const maxHeightPx = containingBlock.clientHeight - this.startTopPx - this.marginPx;
+                nextHeightPx = this.clamp(this.startHeightPx + pointerDeltaY, this.minHeightPx, maxHeightPx);
+            }
+
+            this.hoverMapLeftPx = nextLeftPx;
+            this.hoverMapTopPx = nextTopPx;
+            this.hoverMapWidthPx = nextWidthPx;
+            this.hoverMapHeightPx = nextHeightPx;
+            this.mapComponent().resize();
+        }
+
+        if (this.isDragging) {
+            if (this.hoverMapWidthPx === undefined || this.hoverMapHeightPx === undefined) {
+                return;
+            }
+
+            const maxLeftPx = containingBlock.clientWidth - this.hoverMapWidthPx - this.marginPx;
+            const maxTopPx = containingBlock.clientHeight - this.hoverMapHeightPx - this.marginPx;
+            const boundedMaxLeftPx = Math.max(this.marginPx, maxLeftPx);
+            const boundedMaxTopPx = Math.max(this.marginPx, maxTopPx);
+
+            this.hoverMapLeftPx = this.clamp(this.startLeftPx + pointerDeltaX, this.marginPx, boundedMaxLeftPx);
+            this.hoverMapTopPx = this.clamp(this.startTopPx + pointerDeltaY, this.marginPx, boundedMaxTopPx);
+        }
     };
 
     private readonly pointerUpListener = (): void => {
         this.isResizing = false;
+        this.isDragging = false;
+        this.activeResizeDirection = undefined;
     };
 
     constructor() {
@@ -83,8 +139,11 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         const containerRect = this.hoverMapContainer().nativeElement.getBoundingClientRect();
+        const containingBlockRect = this.getContainingBlock().getBoundingClientRect();
         this.hoverMapWidthPx = containerRect.width;
         this.hoverMapHeightPx = containerRect.height;
+        this.hoverMapLeftPx = containerRect.left - containingBlockRect.left;
+        this.hoverMapTopPx = containerRect.top - containingBlockRect.top;
 
         window.addEventListener('pointermove', this.pointerMoveListener);
         window.addEventListener('pointerup', this.pointerUpListener);
@@ -97,18 +156,42 @@ export class HoverMapComponent implements OnInit, AfterViewInit, OnDestroy {
         window.removeEventListener('pointerup', this.pointerUpListener);
     }
 
-    onResizeStart(event: PointerEvent): void {
+    onResizeStart(event: PointerEvent, direction: ResizeDirection): void {
         event.preventDefault();
 
-        if (this.hoverMapWidthPx === undefined || this.hoverMapHeightPx === undefined) {
+        if (
+            this.hoverMapWidthPx === undefined ||
+            this.hoverMapHeightPx === undefined ||
+            this.hoverMapLeftPx === undefined ||
+            this.hoverMapTopPx === undefined
+        ) {
             return;
         }
 
+        this.isDragging = false;
         this.isResizing = true;
+        this.activeResizeDirection = direction;
         this.startPointerX = event.clientX;
         this.startPointerY = event.clientY;
+        this.startLeftPx = this.hoverMapLeftPx;
+        this.startTopPx = this.hoverMapTopPx;
         this.startWidthPx = this.hoverMapWidthPx;
         this.startHeightPx = this.hoverMapHeightPx;
+    }
+
+    onDragStart(event: PointerEvent): void {
+        event.preventDefault();
+
+        if (this.hoverMapLeftPx === undefined || this.hoverMapTopPx === undefined) {
+            return;
+        }
+
+        this.isResizing = false;
+        this.isDragging = true;
+        this.startPointerX = event.clientX;
+        this.startPointerY = event.clientY;
+        this.startLeftPx = this.hoverMapLeftPx;
+        this.startTopPx = this.hoverMapTopPx;
     }
 
     onReloadButton() {
