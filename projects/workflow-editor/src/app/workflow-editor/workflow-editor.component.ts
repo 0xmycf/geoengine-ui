@@ -126,7 +126,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
     }
 
     onSave(): void {
-        console.warn("onSave");
+        console.warn('onSave');
         const layerCopy = this.layer;
         console.warn({layerCopy});
 
@@ -175,11 +175,11 @@ export class WorkflowEditorComponent implements AfterViewInit {
                 .registerWorkflow(this.widgetModel.get('workflow')!)
                 .pipe(
                     mergeMap((workflowId) => {
-                        console.warn("workflowId is " + workflowId);
+                        console.warn('workflowId is ' + workflowId);
                         return this.datasetService.createLayerFromWorkflow(this.layerName, workflowId);
                     }),
                     map((layer) => {
-                        console.warn("layer is ", + layer);
+                        console.warn('layer is ', +layer);
                         console.warn({layer});
                         return this.projectService.addLayer(layer);
                     }),

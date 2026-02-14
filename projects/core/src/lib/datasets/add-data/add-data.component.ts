@@ -9,7 +9,7 @@ import {LayerCollectionSelectionComponent} from '../../layer-collections/layer-c
 import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
 import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
 import {MatIcon} from '@angular/material/icon';
-import {CreateWorkflowComponent} from "../create-workflow/create-workflow.component";
+import {CreateWorkflowComponent} from '../create-workflow/create-workflow.component';
 
 export interface AddDataButton {
     name: string;

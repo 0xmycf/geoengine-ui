@@ -1,15 +1,6 @@
+import {z} from 'zod';
 
-import { z } from 'zod';
-
-export const PAYLOAD_TYPE_SCHEMA = z.enum([
-    'update',
-    'test',
-    'tokenReq',
-    'projectReq',
-    'tokenResponse',
-    'projectResponse',
-    'ack',
-]);
+export const PAYLOAD_TYPE_SCHEMA = z.enum(['update', 'test', 'tokenReq', 'projectReq', 'tokenResponse', 'projectResponse', 'ack']);
 
 export const POST_MESSAGE_MESSAGE_SCHEMA = z.object({
     kind: PAYLOAD_TYPE_SCHEMA,

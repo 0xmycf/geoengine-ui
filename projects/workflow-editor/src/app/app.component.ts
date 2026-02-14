@@ -17,25 +17,24 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         window.addEventListener('message', (event: MessageEvent) => {
-            console.warn("from app.component.ts (editor)", {event})
+            console.warn('from app.component.ts (editor)', {event});
             if (event.origin !== gisOrigin()) return;
 
             if (!isPostMessageMessage(event.data)) /* invalid data format */ return;
 
             const msg = event.data as PostMessageMessage;
             if (msg.kind === 'tokenResponse' && msg.data) {
-                console.warn("got token; ", msg.data);
+                console.warn('got token; ', msg.data);
 
                 this.createSession(msg.data);
             }
-            if (msg.kind === "projectResponse" && msg.data) {
-                console.warn("got projectResponse, msg.data");
+            if (msg.kind === 'projectResponse' && msg.data) {
+                console.warn('got projectResponse, msg.data');
 
                 this.projectService.loadAndSetProject(msg.data).subscribe((proj) => {
-                    console.warn("load and set proj to: ", {proj});
+                    console.warn('load and set proj to: ', {proj});
                 });
             }
-
         });
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
@@ -57,19 +56,25 @@ export class AppComponent implements OnInit {
 
     private async createSession(token: string) {
         if (token) {
-            this.userService.createSessionWithToken(token).pipe(first()).subscribe(() => {
-                this.requestPorjectToken();
-                this.userService.saveSettingInLocalStorage('session', token);
-            });
+            this.userService
+                .createSessionWithToken(token)
+                .pipe(first())
+                .subscribe(() => {
+                    this.requestPorjectToken();
+                    this.userService.saveSettingInLocalStorage('session', token);
+                });
         }
     }
 
     private bootstrapFromUrl(token: string, projectId: string | null): void {
-        this.userService.createSessionWithToken(token).pipe(first()).subscribe(() => {
-            this.userService.saveSettingInLocalStorage('session', token);
-            if (projectId) {
-                this.projectService.loadAndSetProject(projectId).subscribe();
-            }
-        });
+        this.userService
+            .createSessionWithToken(token)
+            .pipe(first())
+            .subscribe(() => {
+                this.userService.saveSettingInLocalStorage('session', token);
+                if (projectId) {
+                    this.projectService.loadAndSetProject(projectId).subscribe();
+                }
+            });
     }
 }

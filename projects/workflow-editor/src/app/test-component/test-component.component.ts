@@ -19,7 +19,7 @@ export class TestComponentComponent implements OnInit {
         if (!window.opener) {
             console.warn('tab was not created through the interface');
         } else {
-            console.warn("window opener is defined")
+            console.warn('window opener is defined');
         }
         // TODO (high): fix the URL?
         opener.postMessage({kind: 'test', data: 'lorem ipsum by me'} as PostMessageMessage, gisOrigin());

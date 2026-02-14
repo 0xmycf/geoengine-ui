@@ -58,70 +58,70 @@ export class CreateWorkflowComponent {
             combineLatest([this.userService.getSessionTokenStream(), this.projectService.getProjectOnce()])
                 .pipe(first())
                 .subscribe(([token, project]) => {
-                console.warn('preparing to send token, ', token);
-                const myHostname = window.location.hostname;
-                // must be external
-                const workflowUrl = `http://${myHostname}:4201/workflow/${normalizedName}?token=${encodeURIComponent(
-                    token,
-                )}&project=${encodeURIComponent(project.id)}`;
-                const workflowOrigin = new URL(workflowUrl).origin;
-                const workflowTab = open(workflowUrl, '_blank');
+                    console.warn('preparing to send token, ', token);
+                    const myHostname = window.location.hostname;
+                    // must be external
+                    const workflowUrl = `http://${myHostname}:4201/workflow/${normalizedName}?token=${encodeURIComponent(
+                        token,
+                    )}&project=${encodeURIComponent(project.id)}`;
+                    const workflowOrigin = new URL(workflowUrl).origin;
+                    const workflowTab = open(workflowUrl, '_blank');
 
-                // can this be null?
-                if (!workflowTab) {
-                    console.warn('just opened window is null!');
-                }
-
-                if (this.workflowMessageHandler) {
-                    window.removeEventListener('message', this.workflowMessageHandler);
-                }
-
-                this.workflowMessageHandler = (event: MessageEvent) => {
-                    console.warn('from create workflow component ', {event});
-                    // failsafe as described by <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>
-                    if (event.origin !== workflowOrigin) return;
-
-                    if (!isPostMessageMessage(event.data)) /* don't know what this is => ignore */ return;
-
-                    const data = event.data as PostMessageMessage;
-
-                    if (data.kind === 'test') {
-                        console.warn('test the connection: ', data.data);
+                    // can this be null?
+                    if (!workflowTab) {
+                        console.warn('just opened window is null!');
                     }
 
-                    if (data.kind === 'tokenReq') {
-                        if (!workflowTab) {
-                            console.warn('workflowtab is null inside eventlistener');
-                        }
-                        console.warn('sending token', token);
-                        workflowTab?.postMessage(
-                            {
-                                kind: 'tokenResponse',
-                                data: token,
-                            } as PostMessageMessage,
-                            workflowOrigin,
-                        );
+                    if (this.workflowMessageHandler) {
+                        window.removeEventListener('message', this.workflowMessageHandler);
                     }
-                    if (data.kind == 'projectReq') {
-                        if (!workflowTab) {
-                            console.warn('workflowtab is null inside eventlistener');
+
+                    this.workflowMessageHandler = (event: MessageEvent) => {
+                        console.warn('from create workflow component ', {event});
+                        // failsafe as described by <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>
+                        if (event.origin !== workflowOrigin) return;
+
+                        if (!isPostMessageMessage(event.data)) /* don't know what this is => ignore */ return;
+
+                        const data = event.data as PostMessageMessage;
+
+                        if (data.kind === 'test') {
+                            console.warn('test the connection: ', data.data);
                         }
 
-                        this.projectService.getProjectOnce().subscribe((proj) => {
-                            console.warn(`sending project token: {token}`);
-                            const token = proj.id;
+                        if (data.kind === 'tokenReq') {
+                            if (!workflowTab) {
+                                console.warn('workflowtab is null inside eventlistener');
+                            }
+                            console.warn('sending token', token);
                             workflowTab?.postMessage(
                                 {
-                                    kind: 'projectResponse',
+                                    kind: 'tokenResponse',
                                     data: token,
                                 } as PostMessageMessage,
                                 workflowOrigin,
                             );
-                        });
-                    }
-                };
-                window.addEventListener('message', this.workflowMessageHandler);
-            });
+                        }
+                        if (data.kind == 'projectReq') {
+                            if (!workflowTab) {
+                                console.warn('workflowtab is null inside eventlistener');
+                            }
+
+                            this.projectService.getProjectOnce().subscribe((proj) => {
+                                console.warn(`sending project token: {token}`);
+                                const token = proj.id;
+                                workflowTab?.postMessage(
+                                    {
+                                        kind: 'projectResponse',
+                                        data: token,
+                                    } as PostMessageMessage,
+                                    workflowOrigin,
+                                );
+                            });
+                        }
+                    };
+                    window.addEventListener('message', this.workflowMessageHandler);
+                });
         }
     }
 }

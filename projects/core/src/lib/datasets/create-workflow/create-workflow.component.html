@@ -1,9 +1,7 @@
 <geoengine-sidenav-header>Create Workflow via Editor</geoengine-sidenav-header>
 
 <geoengine-dialog-help>
-    <p>
-        Here you can add a new layer by creating a new workflow using an interactive graph-based editor.
-    </p>
+    <p>Here you can add a new layer by creating a new workflow using an interactive graph-based editor.</p>
 </geoengine-dialog-help>
 
 <form [formGroup]="form">
@@ -14,8 +12,13 @@
     </mat-form-field>
 
     <div class="actions">
-        <button type="button" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'"
-                (click)="openEditor()">
+        <button
+            type="button"
+            mat-raised-button
+            color="primary"
+            [disabled]="(form.statusChanges | async) !== 'VALID'"
+            (click)="openEditor()"
+        >
             Open Editor
         </button>
     </div>

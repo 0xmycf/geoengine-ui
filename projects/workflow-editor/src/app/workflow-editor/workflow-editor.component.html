@@ -1,18 +1,16 @@
 <mat-toolbar class="workflow-toolbar">
     <span>Workflow Editor for {{ layerName }}</span>
-    <div *ngIf="loading$ | async; then thenBlock else elseBlock"></div>
+    <div *ngIf="loading$ | async; then thenBlock; else elseBlock"></div>
     <ng-template #thenBlock>
-        <mat-spinner
-            class="loading"
-            [diameter]="15"
-        ></mat-spinner>
+        <mat-spinner class="loading" [diameter]="15"></mat-spinner>
     </ng-template>
     <ng-template #elseBlock>
         <div>
-            <button mat-raised-button
-                    [color]="(isValid$ | async ) === false ? 'disabled' : 'primary'"
-                    [disabled]="(isValid$ | async) === false"
-                    (click)="onSave()"
+            <button
+                mat-raised-button
+                [color]="(isValid$ | async) === false ? 'disabled' : 'primary'"
+                [disabled]="(isValid$ | async) === false"
+                (click)="onSave()"
             >
                 Save
             </button>

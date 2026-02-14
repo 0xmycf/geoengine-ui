@@ -135,7 +135,7 @@ import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neigh
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
 import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
-import {CreateWorkflowComponent} from "./datasets/create-workflow/create-workflow.component";
+import {CreateWorkflowComponent} from './datasets/create-workflow/create-workflow.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
