@@ -1,8 +1,21 @@
-<div id="hover-map-container">
+<div
+    #hoverMapContainer
+    id="hover-map-container"
+    [style.width.px]="hoverMapWidthPx"
+    [style.height.px]="hoverMapHeightPx"
+>
+    <button
+        id="hover-map-resize-handle"
+        type="button"
+        aria-label="Resize hover map"
+        (pointerdown)="onResizeStart($event)"
+    ></button>
+
     <button (click)="onReloadButton()" id="reload-map-button">
         <mat-icon>refresh</mat-icon>
         <span class="mat-body-2">Reload</span>
     </button>
+
     <geoengine-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
         @if (userService.getSessionTokenStream() | async; as sessionToken) {
             @for (layer of layersReverse$ | async; track layer.id) {
