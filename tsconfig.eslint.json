@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "target": "ES2022",
+        "lib": ["ES2022", "dom"],
+        "strict": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "paths": {
+            "@geoengine/core": ["dist/core", "projects/core/src"],
+            "@geoengine/common": ["dist/common", "projects/common/src"],
+            "fast-json-patch/index.mjs": ["./node_modules/fast-json-patch/index.d.ts"]
+        }
+    },
+    "include": ["projects/**/*.ts"],
+    "exclude": ["node_modules/**", "dist/**", "out-tsc/**"]
+}
