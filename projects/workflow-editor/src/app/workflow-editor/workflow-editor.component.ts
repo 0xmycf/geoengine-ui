@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, viewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, OnInit, viewChild} from '@angular/core';
 import {Layer, NotificationService, UserService} from '@geoengine/common';
 import {render, WidgetModel} from 'workflow-editor';
 import {BehaviorSubject, mergeMap} from 'rxjs';
@@ -77,9 +77,9 @@ export interface LayerOrNewName {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [AsyncPipe, MatProgressSpinner, MatToolbar, MatButtonModule],
 })
-export class WorkflowEditorComponent implements AfterViewInit {
-    readonly layerName: string;
-    readonly layer?: Layer;
+export class WorkflowEditorComponent implements OnInit, AfterViewInit {
+    layerName = 'New Workflow Layer';
+    layer?: Layer;
 
     readonly widgetRef = viewChild.required<ElementRef<HTMLElement>>('widget');
     readonly loading$;
@@ -94,14 +94,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
     private readonly datasetService: DatasetService = inject(DatasetService);
 
     constructor() {
-        if (typeof this.layerOrNewName().layerOrNewName === 'string') {
-            this.layerName = this.layerOrNewName().layerOrNewName as string;
-            this.loading$ = new BehaviorSubject(false);
-        } else {
-            this.layer = this.layerOrNewName().layerOrNewName as Layer;
-            this.layerName = this.layer.name;
-            this.loading$ = new BehaviorSubject(true);
-        }
+        this.loading$ = new BehaviorSubject(false);
         this.userService.getSessionStream().subscribe((session) => {
             this.widgetModel.set('token', session.sessionToken);
             this.widgetModel.set('serverUrl', session.apiConfiguration.basePath);
@@ -112,8 +105,22 @@ export class WorkflowEditorComponent implements AfterViewInit {
         });
     }
 
+    ngOnInit(): void {
+        const layerOrNewName = this.layerOrNewName().layerOrNewName;
+
+        if (typeof layerOrNewName === 'string') {
+            this.layer = undefined;
+            this.layerName = layerOrNewName;
+            return;
+        }
+
+        this.layer = layerOrNewName;
+        this.layerName = layerOrNewName.name;
+    }
+
     ngAfterViewInit(): void {
         if (this.layer) {
+            this.loading$.next(true);
             this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
                 this.widgetModel.set('workflow', this.toWidgetWorkflow(workflow));
                 render({
@@ -123,6 +130,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
                 this.loading$.next(false);
             });
         } else if (this.workflowId()) {
+            this.loading$.next(true);
             this.projectService.getWorkflow(this.workflowId()!).subscribe((workflow) => {
                 this.widgetModel.set('workflow', this.toWidgetWorkflow(workflow));
                 render({
@@ -140,9 +148,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
     }
 
     onSave(): void {
-        console.warn('onSave');
         const layerCopy = this.layer;
-        console.warn({layerCopy});
 
         if (layerCopy) {
             this.projectService
@@ -183,18 +189,13 @@ export class WorkflowEditorComponent implements AfterViewInit {
                     this.notificationService.info(`Updated layer »${this.layerName}«`);
                 });
         } else {
-            const wf = this.widgetModel.get('workflow');
-            console.warn({wf});
             this.projectService
                 .registerWorkflow(this.widgetModel.get('workflow')!)
                 .pipe(
                     mergeMap((workflowId) => {
-                        console.warn('workflowId is ' + workflowId);
                         return this.datasetService.createLayerFromWorkflow(this.layerName, workflowId);
                     }),
                     map((layer) => {
-                        console.warn('layer is ', +layer);
-                        console.warn({layer});
                         return this.projectService.addLayer(layer);
                     }),
                 )
