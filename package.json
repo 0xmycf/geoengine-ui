@@ -90,7 +90,7 @@
         "vis-data": "8.0.1",
         "vis-timeline": "8.2.1",
         "vis-util": "6.0.0",
-        "workflow-editor": "file:../workflow-editor",
+        "workflow-editor": "git+https://github.com/0xmycf/workflow-editor.git#workflow-geoengine",
         "xss": "1.0.15",
         "zone.js": "~0.15.1"
     },
