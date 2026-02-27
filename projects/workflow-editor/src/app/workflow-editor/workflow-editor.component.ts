@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, OnInit, viewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, OnDestroy, OnInit, viewChild} from '@angular/core';
 import {Layer, NotificationService, UserService} from '@geoengine/common';
 import {render, WidgetModel} from 'workflow-editor';
 import {BehaviorSubject, mergeMap} from 'rxjs';
@@ -77,7 +77,7 @@ export interface LayerOrNewName {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [AsyncPipe, MatProgressSpinner, MatToolbar, MatButtonModule],
 })
-export class WorkflowEditorComponent implements OnInit, AfterViewInit {
+export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy {
     layerName = 'New Workflow Layer';
     layer?: Layer;
 
@@ -92,9 +92,13 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit {
     private readonly userService: UserService = inject(UserService);
     private readonly notificationService: NotificationService = inject(NotificationService);
     private readonly datasetService: DatasetService = inject(DatasetService);
+    private resizeObserver?: ResizeObserver;
+    private resizeAnimationFrame?: number;
+    private readonly boundOnWindowResize: () => void;
 
     constructor() {
         this.loading$ = new BehaviorSubject(false);
+        this.boundOnWindowResize = this.onWindowResize.bind(this);
         this.userService.getSessionStream().subscribe((session) => {
             this.widgetModel.set('token', session.sessionToken);
             this.widgetModel.set('serverUrl', session.apiConfiguration.basePath);
@@ -123,27 +127,27 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit {
             this.loading$.next(true);
             this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
                 this.widgetModel.set('workflow', this.toWidgetWorkflow(workflow));
-                render({
-                    model: this.widgetModel,
-                    el: this.widgetRef().nativeElement,
-                });
+                this.renderEditor();
                 this.loading$.next(false);
             });
         } else if (this.workflowId()) {
             this.loading$.next(true);
             this.projectService.getWorkflow(this.workflowId()!).subscribe((workflow) => {
                 this.widgetModel.set('workflow', this.toWidgetWorkflow(workflow));
-                render({
-                    model: this.widgetModel,
-                    el: this.widgetRef().nativeElement,
-                });
+                this.renderEditor();
                 this.loading$.next(false);
             });
         } else {
-            render({
-                model: this.widgetModel,
-                el: this.widgetRef().nativeElement,
-            });
+            this.renderEditor();
+        }
+    }
+
+    ngOnDestroy(): void {
+        window.removeEventListener('resize', this.boundOnWindowResize);
+        this.resizeObserver?.disconnect();
+
+        if (this.resizeAnimationFrame !== undefined) {
+            cancelAnimationFrame(this.resizeAnimationFrame);
         }
     }
 
@@ -286,4 +290,71 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit {
     private isObjectRecord(value: unknown): value is Record<string, unknown> {
         return typeof value === 'object' && value !== null && !Array.isArray(value);
     }
+
+    private renderEditor(): void {
+        render({
+            model: this.widgetModel,
+            el: this.widgetRef().nativeElement,
+        });
+        this.registerCanvasResizeHandling();
+    }
+
+    private registerCanvasResizeHandling(): void {
+        this.resizeObserver?.disconnect();
+        window.removeEventListener('resize', this.boundOnWindowResize);
+
+        const widgetElement = this.widgetRef().nativeElement;
+        this.resizeObserver = new ResizeObserver(() => this.scheduleCanvasResize());
+        this.resizeObserver.observe(widgetElement);
+        window.addEventListener('resize', this.boundOnWindowResize);
+        this.scheduleCanvasResize();
+    }
+
+    private scheduleCanvasResize(): void {
+        if (this.resizeAnimationFrame !== undefined) {
+            cancelAnimationFrame(this.resizeAnimationFrame);
+        }
+
+        this.resizeAnimationFrame = requestAnimationFrame(() => {
+            this.resizeAnimationFrame = undefined;
+            this.resizeEditorCanvas();
+        });
+    }
+
+    private resizeEditorCanvas(): void {
+        const widgetElement = this.widgetRef().nativeElement;
+        const canvas = widgetElement.querySelector<HTMLCanvasElement>('canvas.workflow_editor-canvas');
+
+        if (!canvas) {
+            return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const width = Math.round(rect.width);
+        const height = Math.round(rect.height);
+
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+
+        const ratio = window.devicePixelRatio || 1;
+        const pixelWidth = Math.round(width * ratio);
+        const pixelHeight = Math.round(height * ratio);
+
+        if (canvas.width !== pixelWidth) {
+            canvas.width = pixelWidth;
+        }
+
+        if (canvas.height !== pixelHeight) {
+            canvas.height = pixelHeight;
+        }
+
+        const context = canvas.getContext('2d');
+        context?.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    private onWindowResize(): void {
+        this.scheduleCanvasResize();
+    }
+
 }

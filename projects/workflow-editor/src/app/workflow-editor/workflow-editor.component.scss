@@ -1,8 +1,21 @@
 @use '@angular/material';
 
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .workflow-toolbar {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.canvas-container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
 }

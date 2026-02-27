@@ -15,7 +15,4 @@
         </div>
     }
 </mat-toolbar>
-<div>
-    <!-- The editor is rendered inside this widget -->
-    <div #widget [style.visibility]="(loading$ | async) ? 'collapse' : 'visible'"></div>
-</div>
+<div #widget class="canvas-container" [style.visibility]="(loading$ | async) ? 'collapse' : 'visible'"></div>
