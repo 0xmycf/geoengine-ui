@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
                 this.createSession(msg.data);
             }
             if (msg.kind === 'projectResponse' && msg.data) {
-                this.projectService.loadAndSetProject(msg.data).subscribe((proj) => {});
+                this.projectService.loadAndSetProject(msg.data).subscribe();
             }
         });
         const params = new URLSearchParams(window.location.search);

@@ -1,4 +1,15 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, InputSignal, OnDestroy, OnInit, viewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    inject,
+    input,
+    InputSignal,
+    OnDestroy,
+    OnInit,
+    viewChild,
+} from '@angular/core';
 import {Layer, NotificationService, UserService} from '@geoengine/common';
 import {render, WidgetModel} from 'workflow-editor';
 import {BehaviorSubject, mergeMap} from 'rxjs';
@@ -15,7 +26,7 @@ type WidgetWorkflowOperator = WidgetWorkflow['operator'];
 type BackendWorkflow = WorkflowDict | OpenApiWorkflow;
 
 class WidgetModelWrapper {
-    data: WidgetModel = {} as unknown as WidgetModel;
+    data: WidgetModel = {}as WidgetModel;
     listeners: Record<string, ((msg: unknown, buffers: DataView[]) => void)[]> = {};
     // disable inspection as this is actually required / used implicitly
     // noinspection JSUnusedGlobalSymbols
@@ -31,7 +42,7 @@ class WidgetModelWrapper {
 
         if (oldValue !== value) {
             this.data[key] = value;
-            this.listeners['change:' + key]?.forEach((listener) => listener.call(this, null, []));
+            this.listeners['change:'+ key]?.forEach((listener) => listener.call(this, null, []));
         }
     }
 
@@ -156,7 +167,7 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (layerCopy) {
             this.projectService
-                .registerWorkflow(this.widgetModel.get('workflow')!)
+                .registerWorkflow(this.widgetModel.get('workflow') as OpenApiWorkflow)
                 .pipe(
                     map((workflowId) =>
                         this.projectService.changeLayer(layerCopy, {
@@ -174,13 +185,13 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
                     map((project) => project.layers.find((l) => l.workflowId === this.workflowId())),
                     mergeMap((layer) => {
                         if (!layer) {
-                            return this.projectService.registerWorkflow(this.widgetModel.get('workflow')!).pipe(
+                            return this.projectService.registerWorkflow(this.widgetModel.get('workflow') as OpenApiWorkflow).pipe(
                                 mergeMap((workflowId) => this.datasetService.createLayerFromWorkflow(this.layerName, workflowId)),
                                 map((newLayer) => this.projectService.addLayer(newLayer)),
                             );
                         }
 
-                        return this.projectService.registerWorkflow(this.widgetModel.get('workflow')!).pipe(
+                        return this.projectService.registerWorkflow(this.widgetModel.get('workflow') as OpenApiWorkflow).pipe(
                             map((workflowId) =>
                                 this.projectService.changeLayer(layer, {
                                     workflowId,
@@ -194,7 +205,7 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
                 });
         } else {
             this.projectService
-                .registerWorkflow(this.widgetModel.get('workflow')!)
+                .registerWorkflow(this.widgetModel.get('workflow') as OpenApiWorkflow)
                 .pipe(
                     mergeMap((workflowId) => {
                         return this.datasetService.createLayerFromWorkflow(this.layerName, workflowId);
@@ -205,7 +216,7 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
                 )
                 .subscribe(() => {
                     this.notificationService.info(`Created layer »${this.layerName}«`);
-            });
+                });
         }
     }
 
@@ -356,5 +367,4 @@ export class WorkflowEditorComponent implements OnInit, AfterViewInit, OnDestroy
     private onWindowResize(): void {
         this.scheduleCanvasResize();
     }
-
 }
