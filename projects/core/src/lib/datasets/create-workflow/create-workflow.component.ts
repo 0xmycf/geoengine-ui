@@ -52,13 +52,10 @@ export class CreateWorkflowComponent {
         this.layoutService.setSidenavContentComponent(undefined);
         const layerName = this.form.controls.layerName.value;
         if (layerName) {
-            // TODO/workflow
-            console.warn('The redirect is not properly implemented yet, ', window.origin);
             const normalizedName = encodeURIComponent(layerName);
             combineLatest([this.userService.getSessionTokenStream(), this.projectService.getProjectOnce()])
                 .pipe(first())
                 .subscribe(([token, project]) => {
-                    console.warn('preparing to send token, ', token);
                     const myHostname = window.location.hostname;
                     // must be external
                     const workflowUrl = `http://${myHostname}:4201/workflow/${normalizedName}?token=${encodeURIComponent(
@@ -76,8 +73,7 @@ export class CreateWorkflowComponent {
                         window.removeEventListener('message', this.workflowMessageHandler);
                     }
 
-                    this.workflowMessageHandler = (event: MessageEvent) : void => {
-                        console.warn('from create workflow component ', {event});
+                    this.workflowMessageHandler = (event: MessageEvent): void => {
                         // failsafe as described by <https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage>
                         if (event.origin !== workflowOrigin) return;
 
@@ -93,7 +89,6 @@ export class CreateWorkflowComponent {
                             if (!workflowTab) {
                                 console.warn('workflowtab is null inside eventlistener');
                             }
-                            console.warn('sending token', token);
                             workflowTab?.postMessage(
                                 {
                                     kind: 'tokenResponse',
@@ -108,7 +103,6 @@ export class CreateWorkflowComponent {
                             }
 
                             this.projectService.getProjectOnce().subscribe((proj) => {
-                                console.warn(`sending project token: {token}`);
                                 const tkn = proj.id;
                                 workflowTab?.postMessage(
                                     {

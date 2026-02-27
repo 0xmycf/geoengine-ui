@@ -240,8 +240,4 @@ export class LayerListElementComponent {
     rasterSymbology(layer: Layer): RasterSymbology {
         return layer.symbology as RasterSymbology;
     }
-
-    // protected changeVisibility(layer: Layer, bl: boolean): void {
-    //     this.projectService.changeLayer(layer, {isVisible: bl});
-    // }
 }

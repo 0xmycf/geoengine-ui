@@ -17,23 +17,16 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         window.addEventListener('message', (event: MessageEvent) => {
-            console.warn('from app.component.ts (editor)', {event});
             if (event.origin !== gisOrigin()) return;
 
             if (!isPostMessageMessage(event.data)) /* invalid data format */ return;
 
             const msg = event.data as PostMessageMessage;
             if (msg.kind === 'tokenResponse' && msg.data) {
-                console.warn('got token; ', msg.data);
-
                 this.createSession(msg.data);
             }
             if (msg.kind === 'projectResponse' && msg.data) {
-                console.warn('got projectResponse, msg.data');
-
-                this.projectService.loadAndSetProject(msg.data).subscribe((proj) => {
-                    console.warn('load and set proj to: ', {proj});
-                });
+                this.projectService.loadAndSetProject(msg.data).subscribe((proj) => {});
             }
         });
         const params = new URLSearchParams(window.location.search);
