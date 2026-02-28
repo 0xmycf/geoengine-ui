@@ -27,8 +27,7 @@ export default defineConfig([
             parser: tseslint.parser,
 
             parserOptions: {
-                project: ['tsconfig.eslint.json'],
-                tsconfigRootDir: import.meta.dirname,
+                project: ['tsconfig.json'],
                 createDefaultProgram: false,
             },
         },
