@@ -105,7 +105,7 @@ export class AddDataComponent {
     }
 
     /**
-     * Create workflow dialog
+     * Create workflow tab
      */
     static createWorkflowEditorButton(): AddDataButton {
         return {

@@ -33,7 +33,6 @@ export class AddWorkflowComponent {
     protected readonly notificationService = inject(NotificationService);
     protected readonly datasetService = inject(DatasetService);
 
-    // TODO make this typed
     readonly form: UntypedFormGroup;
 
     constructor() {
