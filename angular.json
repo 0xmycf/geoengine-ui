@@ -1238,10 +1238,7 @@
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/workflow-editor/**/*.ts",
-                            "projects/workflow-editor/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/workflow-editor/**/*.ts", "projects/workflow-editor/**/*.html"]
                     }
                 }
             }

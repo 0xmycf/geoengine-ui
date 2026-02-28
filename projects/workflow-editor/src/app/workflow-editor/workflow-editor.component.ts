@@ -26,7 +26,7 @@ type WidgetWorkflowOperator = WidgetWorkflow['operator'];
 type BackendWorkflow = WorkflowDict | OpenApiWorkflow;
 
 class WidgetModelWrapper {
-    data: WidgetModel = {}as WidgetModel;
+    data: WidgetModel = {} as WidgetModel;
     listeners: Record<string, ((msg: unknown, buffers: DataView[]) => void)[]> = {};
     // disable inspection as this is actually required / used implicitly
     // noinspection JSUnusedGlobalSymbols
@@ -42,7 +42,7 @@ class WidgetModelWrapper {
 
         if (oldValue !== value) {
             this.data[key] = value;
-            this.listeners['change:'+ key]?.forEach((listener) => listener.call(this, null, []));
+            this.listeners['change:' + key]?.forEach((listener) => listener.call(this, null, []));
         }
     }
 
